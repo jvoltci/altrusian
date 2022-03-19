@@ -57,7 +57,7 @@ const Footer = ({ t }: any) => {
               <Para>
                 {t(`Do you have any question? Feel free to reach out.`)}
               </Para>
-              <a href="ati@altrusian.com">
+              <a href="hello@altrusian.com">
                 <Chat>{t(`Let's Chat`)}</Chat>
               </a>
             </Col>
@@ -83,7 +83,7 @@ const Footer = ({ t }: any) => {
           </Row>
         </Container>
       </FooterSection>
-      <Extra>
+      {/* <Extra>
         <Container border={true}>
           <Row
             justify="space-between"
@@ -102,7 +102,7 @@ const Footer = ({ t }: any) => {
             </NavLink>
           </Row>
         </Container>
-      </Extra>
+      </Extra> */}
     </>
   );
 };

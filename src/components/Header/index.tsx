@@ -61,18 +61,21 @@ const Header = ({ t }: any) => {
   return (
     <HeaderSection>
       <Container>
-        <Row justify="space-between">
-          <LogoContainer to="/" aria-label="homepage">
+        <Row justify="center">
+        <LogoContainer to="/" aria-label="homepage">
             <SvgIcon src="altrusian.png" width="101px" height="64px" />
           </LogoContainer>
-          <NotHidden>
+        </Row>
+        <div style={{margin: "10", display: "flex", justifyContent: "center"}} >
+          <text>Comming soon...</text>
+          {/* <NotHidden>
             <MenuItem />
           </NotHidden>
           <Burger onClick={showDrawer}>
             <Outline />
-          </Burger>
-        </Row>
-        <Drawer closable={false} visible={visible} onClose={onClose}>
+          </Burger> */}
+        </div>
+        {/* <Drawer closable={false} visible={visible} onClose={onClose}>
           <Col style={{ marginBottom: "2.5rem" }}>
             <Label onClick={onClose}>
               <Col span={12}>
@@ -84,7 +87,7 @@ const Header = ({ t }: any) => {
             </Label>
           </Col>
           <MenuItem />
-        </Drawer>
+        </Drawer> */}
       </Container>
     </HeaderSection>
   );
