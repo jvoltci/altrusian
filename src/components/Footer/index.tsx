@@ -63,7 +63,7 @@ const Footer = ({ t }: any) => {
             </Col>
             <Col lg={6} md={10} sm={12} xs={12}>
               <Language>{t("Address")}</Language>
-              <Para>Altrusian PLC, A/2</Para>
+              <Para>Altrusian Co., A/2</Para>
               <Para>Solani Puram, Roorkee</Para>
               <Para>Uttarakhand - 247667</Para>
             </Col>
