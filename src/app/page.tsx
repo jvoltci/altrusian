@@ -3,8 +3,8 @@
 import dynamic from "next/dynamic";
 import "@/app/globals.css";
 import BlackHoleButton from "@/components/BlackHoleButton";
-import Image from "next/image";
 import altrusianLogo from "@/assets/altrusian.png";
+import Image from "next/image";
 
 const ThreeScene = dynamic(() => import("@/components/ThreeScene"), {
   ssr: false,
