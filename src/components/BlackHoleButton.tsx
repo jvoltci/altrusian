@@ -8,7 +8,7 @@ const BlackHoleScene = dynamic(() => import("@/components/BlackHoleScene"), { ss
 export default function BlackHoleButton() {
   const [active, setActive] = useState(false);
 
-  const buttonStyle = {
+  const buttonStyle: React.CSSProperties = {
     position: "relative",
     zIndex: 1,
     padding: "14px 36px",
