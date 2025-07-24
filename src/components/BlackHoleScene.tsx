@@ -134,6 +134,7 @@ export default function BlackHoleScene({ active }: Props) {
       }
     };
   }, []);
+  
 
   return (
     <div
