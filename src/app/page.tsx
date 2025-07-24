@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import "@/app/globals.css";
 import Image from "next/image";
-import AltrusianLogo from "../../public/images/altrusian.png";
 import BlackHoleButton from "@/components/BlackHoleButton";
 
 const ThreeScene = dynamic(() => import("@/components/ThreeScene"), {
@@ -69,13 +68,14 @@ export default function Home() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <Image
-          src={AltrusianLogo}
+        <img
+          src="/images/altrusian.png"
           alt="Altrusian Logo"
           width={24}
           height={24}
           style={{ borderRadius: "50%" }}
         />
+
         <span
           style={{
             fontSize: "0.875rem",
@@ -123,10 +123,12 @@ export default function Home() {
             marginBottom: 32,
           }}
         >
-          We are more than engineers of intelligence — we are seekers of its soul. At the crossroads of mathematics, intuition, and abstraction, we explore the silent code that may one day awaken true artificial thought.
+          We are more than engineers of intelligence — we are seekers of its
+          soul. At the crossroads of mathematics, intuition, and abstraction, we
+          explore the silent code that may one day awaken true artificial
+          thought.
         </p>
         <BlackHoleButton />
-
       </div>
 
       {/* Bottom Left Tag */}
