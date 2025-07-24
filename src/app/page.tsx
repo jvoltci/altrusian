@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import "@/app/globals.css";
 import BlackHoleButton from "@/components/BlackHoleButton";
+import Image from "next/image";
 
 const ThreeScene = dynamic(() => import("@/components/ThreeScene"), {
   ssr: false,
@@ -67,7 +68,7 @@ export default function Home() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <img
+        <Image
           src="/images/altrusian.png"
           alt="Logo"
           width={24}
