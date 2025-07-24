@@ -68,8 +68,8 @@ export default function Home() {
         }}
       >
         <img
-          src="/altrusian/images/altrusian.png"
-          alt="Altrusian Logo"
+          src="/images/altrusian.png"
+          alt="Logo"
           width={24}
           height={24}
           style={{ borderRadius: "50%" }}
