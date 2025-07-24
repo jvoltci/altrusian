@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 import "@/app/globals.css";
-import Image from "next/image";
 import BlackHoleButton from "@/components/BlackHoleButton";
 
 const ThreeScene = dynamic(() => import("@/components/ThreeScene"), {
