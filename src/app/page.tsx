@@ -68,7 +68,7 @@ export default function Home() {
         }}
       >
         <img
-          src="/images/altrusian.png"
+          src="/altrusian/images/altrusian.png"
           alt="Altrusian Logo"
           width={24}
           height={24}
@@ -129,22 +129,6 @@ export default function Home() {
         </p>
         <BlackHoleButton />
       </div>
-
-      {/* Bottom Left Tag */}
-      {/* <div
-        style={{
-          position: "absolute",
-          bottom: 12,
-          left: 16,
-          fontSize: "0.75rem",
-          color: "rgba(255, 255, 255, 0.4)",
-          zIndex: 20,
-          fontFamily: "monospace",
-          letterSpacing: "-0.02em",
-        }}
-      >
-        fitter inline
-      </div> */}
 
       {/* Bottom Right Contact Email */}
       <div
