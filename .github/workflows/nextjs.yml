@@ -27,12 +27,12 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build site
+      - name: Build & Export static site
         run: |
           export GITHUB_PAGES=true
-          npm run build
+          npm run build && npx next export
 
       - name: List output files
         run: ls -la ./out
