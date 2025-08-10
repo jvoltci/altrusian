@@ -13,27 +13,27 @@ const ThreeScene = () => {
     // Scene, Camera, and Renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    // Position the camera to see the full-screen plane
-    camera.position.z = 1; 
+    camera.position.z = 1;
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    // === Vortex Shader Code ===
+    // === Starry Night Shader Code ===
     const vertexShader = `
         varying vec2 vUv;
         void main() {
             vUv = uv;
-            // Use this simple setup for a full-screen shader
             gl_Position = vec4(position, 1.0);
         }
     `;
 
     const fragmentShader = `
+        #define PI 3.14159265359
+
         varying vec2 vUv;
         uniform float u_time;
-        uniform vec2 u_mouse;
         uniform vec2 u_resolution;
+        uniform vec2 u_rand_offset; // NEW: Uniform for the random offset
 
         // 2D Random function
         float random (vec2 st) {
@@ -54,71 +54,103 @@ const ThreeScene = () => {
             return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
         }
 
-        // Fractional Brownian Motion for turbulence
+        // Fractional Brownian Motion for turbulence (Further Optimized for Mobile)
         float fbm(vec2 st) {
             float value = 0.0;
             float amplitude = 0.5;
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 3; i++) {
                 value += amplitude * noise(st);
                 st *= 2.0;
                 amplitude *= 0.5;
             }
             return value;
         }
-        
+
         // Star generation
         float star(vec2 st, float size, float twinkle_speed) {
             vec2 grid = floor(st);
             vec2 f = fract(st);
             float star_val = random(grid);
-            
-            float t = u_time * twinkle_speed + star_val * 20.0;
+
+            float t = u_time * twinkle_speed * random(grid) + star_val * 20.0;
             float twinkle = sin(t) * 0.5 + 0.5;
 
-            if (star_val > 0.99) {
+            if (star_val > 0.98) {
                 float m = 1.0 - smoothstep(0.0, size, length(f - 0.5));
                 return m * twinkle;
             }
             return 0.0;
         }
 
+        // Mountain Generation
+        float mountain(vec2 st) {
+            float h = fbm(st * 0.3 + 0.3);
+            h = h * fbm(st * 0.8 + h);
+            h = pow(h, 2.5);
+            return h;
+        }
+
+        // REALISTIC Shooting Star
+        vec3 shooting_star(vec2 st, float time) {
+            float seed = floor(time * 0.3);
+            if (random(vec2(seed, seed * 0.5)) < 0.7) {
+                return vec3(0.0);
+            }
+            float time_frac = fract(time * 0.3);
+            vec2 start_pos = vec2(random(vec2(seed, seed)) * 2.0 - 1.0, 1.2);
+            vec2 dir = normalize(vec2(random(vec2(seed * 0.5, seed * 0.2)) * 0.6 - 0.3, -1.0));
+            float speed = random(vec2(seed * 0.1, seed * 0.9)) * 3.5 + 2.5;
+            dir.x += sin(time_frac * PI) * 0.2;
+            vec2 pos = start_pos + dir * time_frac * speed;
+            float star_dist = distance(st, pos);
+            float star_brightness = smoothstep(0.01, 0.0, star_dist);
+            float tail_length = 0.2;
+            float proj = dot(st - pos, -dir);
+            vec2 proj_pos = pos - dir * proj;
+            float tail_dist = distance(st, proj_pos);
+            float tail_brightness = 0.0;
+            if (proj > 0.0 && proj < tail_length) {
+                tail_brightness = smoothstep(0.03, 0.0, tail_dist) * (1.0 - proj / tail_length);
+            }
+            float total_brightness = star_brightness + tail_brightness * 0.8;
+            float life = sin(time_frac * PI);
+            vec3 star_color = vec3(0.8, 0.9, 1.0);
+            return vec3(total_brightness * life) * star_color;
+        }
+
         void main() {
             vec2 st = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
-            vec2 mouse = (u_mouse * 2.0 - u_resolution.xy) / u_resolution.y;
-            
-            // --- Background Nebula/Vortex Effect ---
-            vec2 q = vec2(0.0);
-            q.x = fbm(st + 0.00 * u_time);
-            q.y = fbm(st + vec2(1.0));
+            vec3 color = vec3(0.0, 0.0, 0.05);
 
-            vec2 r = vec2(0.0);
-            r.x = fbm(st + 1.0*q + vec2(1.7,9.2)+ 0.15*u_time);
-            r.y = fbm(st + 1.0*q + vec2(8.3,2.8)+ 0.126*u_time);
-            float f = fbm(st+r);
-
-            vec3 color = mix(vec3(0.1, 0.0, 0.4), // Deep blue/purple
-                             vec3(0.9, 0.2, 0.5), // Magenta/pink
-                             clamp((f*f)*3.0,0.0,1.0));
-
-            color = mix(color,
-                        vec3(0.0, 0.0, 0.0), // Black
-                        clamp(length(q),0.0,1.0));
-
-            color = mix(color,
-                        vec3(0.9, 1.0, 1.0), // White highlights
-                        clamp(length(r.x),0.0,1.0));
-            
-            color = (f*f*f+.6*f*f+.5*f)*color;
-
-            // --- Starfield ---
-            vec2 star_st = st * 30.0 + r * 2.0; 
-            vec3 star_color = vec3(star(star_st, 0.15, 0.5));
+            // Starfield (Density reduced for mobile)
+            vec2 star_st = st * 60.0;
+            vec3 star_color = vec3(star(star_st, 0.1, 0.2));
+            star_color += vec3(star(star_st * 0.5, 0.15, 0.1));
             color += star_color;
 
-            // --- Mouse Light ---
-            float mouse_dist = distance(st, mouse);
-            float mouse_glow = 1.0 - smoothstep(0.0, 0.15, mouse_dist);
-            color += mouse_glow * 0.5;
+            // Aurora Borealis
+            vec2 aurora_st = vUv;
+            aurora_st += u_rand_offset; // NEW: Apply the random offset
+            aurora_st.x *= 2.0;
+            aurora_st.y -= u_time * 0.03;
+            float n = fbm(aurora_st * 1.5);
+            float n2 = fbm(aurora_st * 2.5 + 10.0);
+            float aurora = smoothstep(0.4, 0.6, n) * (1.0 - smoothstep(0.5, 0.7, n));
+            float aurora2 = smoothstep(0.3, 0.8, n2) * (1.0 - smoothstep(0.6, 0.7, n2));
+            vec3 aurora_color = vec3(0.1, 0.9, 0.5);
+            vec3 aurora_color2 = vec3(0.2, 0.5, 0.9);
+            color += aurora * aurora_color * (1.0 - vUv.y);
+            color += aurora2 * aurora_color2 * (1.0 - vUv.y) * 0.5;
+
+            // Shooting Star
+            color += shooting_star(st, u_time);
+            
+            // Mountain Silhouette
+            vec2 mountain_st = vUv * vec2(1.5, 1.0);
+            float mountain_shape = mountain(mountain_st);
+            float mountain_mask = smoothstep(0.1, 0.15 + (vUv.x * (1.0-vUv.x) * 0.4) , vUv.y - mountain_shape * 0.4);
+            vec3 mountain_color = vec3(0.02, 0.03, 0.04);
+            color = mix(mountain_color, color, mountain_mask);
 
             gl_FragColor = vec4(color, 1.0);
         }
@@ -127,8 +159,9 @@ const ThreeScene = () => {
     // Shader Material and Uniforms
     const uniforms = {
         u_time: { value: 0.0 },
-        u_mouse: { value: new THREE.Vector2(0, 0) },
         u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        // NEW: Define the random offset uniform and give it a random value on load
+        u_rand_offset: { value: new THREE.Vector2(Math.random() * 100.0, Math.random() * 100.0) }
     };
 
     const material = new THREE.ShaderMaterial({
@@ -142,13 +175,7 @@ const ThreeScene = () => {
     const plane = new THREE.Mesh(geometry, material);
     scene.add(plane);
 
-    // Event Listeners
-    const handleMouseMove = (event: MouseEvent) => {
-        uniforms.u_mouse.value.x = event.clientX;
-        uniforms.u_mouse.value.y = window.innerHeight - event.clientY; // Invert Y
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-
+    // Event Listener for screen resizing
     const handleResize = () => {
         const width = window.innerWidth;
         const height = window.innerHeight;
@@ -171,7 +198,6 @@ const ThreeScene = () => {
 
     // Cleanup function
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
       geometry.dispose();

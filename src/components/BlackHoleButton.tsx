@@ -49,10 +49,10 @@ export default function BlackHoleButton() {
         overflow: "hidden",
         touchAction: "manipulation",
       }}
-      onMouseEnter={handleActivate}
-      onMouseLeave={handleDeactivate}
-      onTouchStart={handleActivate}
-      onTouchEnd={handleDeactivate}
+      // onMouseEnter={handleActivate}
+      // onMouseLeave={handleDeactivate}
+      // onTouchStart={handleActivate}
+      // onTouchEnd={handleDeactivate}
     >
       <div
         style={{

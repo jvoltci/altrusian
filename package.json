@@ -10,6 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-three/drei": "^10.6.1",
+    "@react-three/fiber": "^9.3.0",
     "@tailwindcss/vite": "^4.1.11",
     "@types/three": "^0.178.1",
     "framer-motion": "^12.23.7",
